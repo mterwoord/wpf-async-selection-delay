@@ -72,7 +72,6 @@ namespace WpfAsyncSelectionDelay
             {
                 mCancelToken = null;
             }
-            ;
         }
 
         private CancellationTokenSource mCancelToken;
