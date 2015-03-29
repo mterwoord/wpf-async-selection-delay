@@ -51,7 +51,8 @@ namespace WpfAsyncSelectionDelay
             if (mCancelToken != null)
             {
                 mCancelToken.Cancel();
-                mCancelToken = null;
+                // we need to yield here. Only then the TaskCanceledException occurs
+                await Task.Yield();
             }
             try
             {
