@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Instrumentation;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -50,21 +51,28 @@ namespace WpfAsyncSelectionDelay
             if (mCancelToken != null)
             {
                 mCancelToken.Cancel();
-                mCancelToken.Dispose();
                 mCancelToken = null;
             }
-
-            mCancelToken = new CancellationTokenSource();
-
             try
             {
-                await Task.Delay(1000, mCancelToken.Token);
+                using (mCancelToken = new CancellationTokenSource())
+                {
+                    try
+                    {
+                        await Task.Delay(1000, mCancelToken.Token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        return;
+                    }
+                    HandleValueChanged();
+                }
             }
-            catch (TaskCanceledException)
+            finally
             {
-                return;
+                mCancelToken = null;
             }
-            HandleValueChanged();
+            ;
         }
 
         private CancellationTokenSource mCancelToken;
